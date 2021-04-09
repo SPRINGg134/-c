@@ -1,0 +1,238 @@
+#define _CRT_SECURE_NO_WARNINGS 1
+#include<stdio.h>
+#include<stdlib.h>
+typedef int ElemType;
+
+typedef struct Node
+{
+	ElemType data;
+	struct Node* next;
+}Node, * Linklist;
+
+void InitList(Linklist* L)
+{
+	*L = (Linklist)malloc(sizeof(Node));
+	(*L)->next = NULL;
+}
+
+void CreateList(Linklist L)//建立单链表
+{
+	Linklist p, s;
+	ElemType count = 0, input = 0;//count 为输入数字的个数 input 为输入的数字
+	/*	L = (Linklist)malloc(sizeof(Node));
+	L->next = NULL;*/
+	p = L;
+	printf("请输入要输入几个数字:");
+	scanf("%d", &count);
+	while (count--)
+	{
+		s = (Linklist)malloc(sizeof(Node));
+		printf("请输入要输入的数字:");
+		scanf("%d", &input);
+		s->data = input;
+		s->next = NULL;
+		p->next = s;
+		p = s;
+	}
+	printf("输入完成\n");
+}
+
+void Print(Linklist L)//遍历单链表
+{
+	Linklist p;
+	int  i = 1;
+	p = L->next;
+	while (p != NULL)
+	{
+		printf("第%d个数%d ", i, p->data);
+		p = p->next;
+		i++;
+	}
+	printf("\n");
+}
+
+void Inversion(Linklist L)//逆置单链表
+{
+	Linklist p, s;
+	p = L->next;
+	L->next = NULL;
+	while (p)
+	{
+		s = p;
+		p = p->next;
+		s->next = L->next;
+		L->next = s;
+	}
+}
+
+void Insert(Linklist  L, ElemType x)
+{
+	Linklist p, s;
+	s = (Linklist)malloc(sizeof(Node));
+	s->data = x;
+	p = L;
+	while (p->next && p->next->data <= x)
+	{
+		p = p->next;
+	}
+	s->next = p->next;
+	p->next = s;
+}
+
+void Creat_Sort(Linklist L)
+{
+	ElemType x;
+	int i = 0;//存放输入的数字
+	/*L = (Linklist)malloc(sizeof(Node));
+	L->next = NULL;*/
+	printf("建立有序表，输入任意个整形数据以结束:\n");
+	printf("请输入个数:");
+	scanf("%d", &x);
+	printf("请输入数据:");
+	while (x--)
+	{
+		scanf("%d", &i);
+		Insert(L, i);
+	}
+}
+
+void merger(Linklist La, Linklist Lb, Linklist Lc)//将前两个链表的数据合并之后再输入到第三个链表
+{
+	Linklist p, q, s, rear;
+	p = La->next;
+	q = Lb->next;
+	rear = La;
+	Lc = rear;
+	//free(Lb);
+	while (p && q)
+	{
+		if (p->data < q->data)
+		{
+			s = p;
+			p = p->next;
+		}
+		else
+		{
+			s = q;
+			q = q->next;
+		}
+		rear->next = s;
+		rear = rear->next;
+	}
+	if (p)
+	{
+		rear->next = p;
+	}
+	else
+	{
+		rear->next = q;
+	}
+}
+
+void Delete(Linklist  L, ElemType x)
+{
+	Linklist p, q;
+	p = L;
+	q = L->next;
+	while (q && q->data != x)
+	{
+		p = q;
+		q = q->next;
+	}
+	if (!q)
+	{
+		printf("\n not deleted");
+	}
+	else
+	{
+		p->next = q->next;
+		free(q);
+	}
+}
+
+int main()
+{
+	Linklist La, Lb, Lc;
+
+	ElemType x;
+	int n;
+
+	InitList(&La);
+	InitList(&Lb);
+	InitList(&Lc);
+
+	printf("1.随机输入一组随机的元素，建立无序的单链表 \n");
+	printf("2.以输出的形式遍历单链表\n");
+	printf("3.将单向链表中元素逆置\n");
+	printf("4.建立一个非递减有序单链表\n");
+	printf("5.建立两个非递减有序单链表,然后合并成一个非递减有序单链表\n");
+	printf("6.在非递减有序单链表中插入一个元素\n");
+	printf("7.删除指定元素\n");
+	printf("0.退出\n");
+	while (1)
+	{
+		printf("请选择：");
+		scanf("%d", &n);
+		switch (n)
+		{
+		case 1:
+			CreateList(La);//随机输入一组随机的元素，建立无序的单链表
+			break;
+		case 2:
+			Print(La);//输出的形式遍历单链表
+			break;
+		case 3:
+			Inversion(La);//将单向链表中元素逆置
+			Print(La);
+			break;
+		case 4:
+			Creat_Sort(La);//建立一个非递减有序单链表
+			Print(La);
+			break;
+		case 5:
+			if (La == NULL)
+			{
+				printf("请输入第一个表:");
+				Creat_Sort(La);
+			}
+			else
+			{
+				printf("表一已存在请输入第二个表:");
+			}
+			Creat_Sort(Lb);
+			merger(La, Lb, Lc);
+			Print(Lc);
+			break;
+		case 6:
+			if (La == NULL)
+			{
+				Creat_Sort(La);
+			}
+			Print(La);
+			printf("请输入要插入的元素x：");
+			scanf("%d", &x);
+			Insert(La, x);
+			Print(La);
+			break;
+		case 7:
+			if (La == NULL)
+			{
+				Creat_Sort(La);
+			}
+			Print(La);
+			printf("请输入要删除的元素x:");
+			scanf("%d", &x);
+			Delete(La, x);
+			Print(La);
+			break;
+		case 0:
+			printf("退出\n");
+			return 1;
+		default:
+			printf("输入有误，重新选择\n");
+		}
+	}
+	system("pause");
+	return 0;
+
+}
